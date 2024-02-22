@@ -1,78 +1,109 @@
-import React, { useEffect, useState, ListItem } from 'react' 
-import axios from 'axios' 
- 
-const FetchRegistration = () => { 
-const [res,setRes]=useState([]) 
-const [formData, setFormData]=useState({name:'',role:'',email:'',password:'',id:''}) 
-const fetchData=async()=>{ 
-await axios.get('http://localhost:8080/retrieve') 
-.then(response=>{ 
-    setRes(response.data) 
-    console.log(response.data) 
-})} 
-useEffect(()=>{ 
-  fetchData()  
-}, 
-[]) 
-const updateData=async(id)=>{ 
-  console.log(id) 
-const res = await axios.put(`http://localhost:8080/users/:${id}`,formData) 
-fetchData() 
-  console.log(res.data) 
-} 
-const handleDelete=async (id)=>{ 
-  await axios.delete(`http://localhost:8080/users/${id}`) 
-  .then((response)=>{ 
-    console.log(response.data) 
-  }) 
-  fetchData() 
-} 
-const changeHandler=(e)=>{ 
-  setFormData({ ...formData, [e.target.name]: e.target.value}); 
-}; 
- 
-  return ( 
- 
-    <div><center><h1>Registration</h1> 
-    <table border ={1}> 
-      <tr> 
-        <th>ID</th> 
-        <th>Name</th> 
-        <th>Roles</th> 
-        <th>Email</th> 
-        <th>Password</th> 
-      </tr> 
-      { 
-        res.map((item, index) => ( 
-         <tr key={index}> 
-          '<td>{item._id}</td> 
-          <td>{item.name}</td> 
-          <td>{item.role}</td> 
-          <td>{item.email}</td> 
-          <td>{item.password}</td> 
-          <td> 
-            <input type='text' name='name' 
-            placeholder='New Name'  
-            onChange={changeHandler}/> 
-             <input type='text' name='role' 
-            placeholder='New Role'  
-            onChange={changeHandler}/> 
-             <input type='text' name='email' 
-            placeholder='New email'  
-            onChange={changeHandler}/> 
-             <input type='text' name='password' 
-            placeholder='New password'  
-            onChange={changeHandler}/> 
-            <button onClick={()=>updateData(item._id)}>update</button> 
-            <button onClick={()=>handleDelete(item._id)}>Delete</button> 
-          </td> 
-         </tr>  
-        ))} 
-    </table> 
-    </center> 
-   
-    </div> 
- 
-  ) 
-} 
-export default FetchRegistration
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const FetchRegistration = () => {
+  const [res, setRes] = useState([]);
+  const [formData, setFormData] = useState({ id: '', name: '', role: '', email: '', password: '' });
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/retrieve');
+      setRes(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const updateData = async (id) => {
+    try {
+      await axios.put(`http://localhost:8080/users/${id}`, formData);
+      fetchData();
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/users/${id}`);
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting data:', error);
+    }
+  };
+
+  const changeHandler = (e, index) => {
+    const updatedFormData = [...res];
+    updatedFormData[index][e.target.name] = e.target.value;
+    setRes(updatedFormData);
+  };
+
+  return (
+    <div>
+      <center>
+        <h1>Registration</h1>
+        <table border={1}>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Roles</th>
+              <th>Email</th>
+              <th>Password</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {res.map((item, index) => (
+              <tr key={index}>
+                <td>{item._id}</td>
+                <td>
+                  <input
+                    type="text"
+                    name="name"
+                    value={item.name}
+                    onChange={(e) => changeHandler(e, index)}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="role"
+                    value={item.role}
+                    onChange={(e) => changeHandler(e, index)}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="email"
+                    value={item.email}
+                    onChange={(e) => changeHandler(e, index)}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="password"
+                    value={item.password}
+                    onChange={(e) => changeHandler(e, index)}
+                  />
+                </td>
+                <td>
+                  <button onClick={() => updateData(item._id)}>Update</button>
+                  <button onClick={() => handleDelete(item._id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </center>
+    </div>
+  );
+};
+
+export default FetchRegistration;

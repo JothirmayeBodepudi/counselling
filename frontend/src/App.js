@@ -11,6 +11,7 @@ import Counsellor from "./components/Counsellor";
 import Contactinfo from "./components/Contactinfo";
 import About from "./components/About";
 import FetchRegistrations from "./components/FetchRegistrations";
+import Success from "./components/Success";
 
 
 
@@ -28,6 +29,7 @@ function App() {
       <Route path="/counsellor" element={<Counsellor/>} exact />
       <Route path="/visitor" element={<Visitor/>} exact />
       <Route path="/Appointment" element={<Appointment/>} exact />
+      <Route path="/success" element={<Success/>} exact />
       <Route path="/Contactinfo" element={<Contactinfo/>} exact />
       <Route path="/About" element={<About/>} exact />
       <Route path="/FetchRegistrations" element={<FetchRegistrations/>} exact />

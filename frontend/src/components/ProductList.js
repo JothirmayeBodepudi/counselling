@@ -1,49 +1,91 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export class ProductList extends Component {
-  state = {
-    products: [
-      { id: 1, name: 'oranges', cost: 20 },
-      { id: 2, name: 'mango', cost: 30 },
-      { id: 3, name: 'banana', cost: 10 },
-      // Add more products as needed
-    ],
-    cart: [],
+const Timer = () => {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setSeconds(prevSeconds => prevSeconds + 1);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return (
+    <div>
+      <h3>Timer</h3>
+      <p>Seconds: {seconds}</p>
+    </div>
+  );
+};
+
+const ProductList = ({ products }) => {
+  const [cart, setCart] = useState([]);
+  const [todoList, setTodoList] = useState([
+    { title: 'Purchase the Stock', completed: false },
+    { title: 'Arrange the Stock in Order', completed: true },
+    { title: 'Collect Money from the Customer', completed: true },
+    // Add more todos as needed
+  ]);
+
+  const handleAddToCart = (productName) => {
+    setCart(prevCart => [...prevCart, productName]);
   };
 
-  handleAddClick = (productId) => {
-    const selectedProduct = this.state.products.find(product => product.id === productId);
-    if (selectedProduct) {
-      this.setState(prevState => ({
-        cart: [...prevState.cart, selectedProduct],
-      }));
-      console.log(' Product with ID ${productId} added to the cart ');
-    }
+  const handleRemoveFromCart = (index) => {
+    const newCart = [...cart];
+    newCart.splice(index, 1);
+    setCart(newCart);
   };
 
-  render() {
-    return (
-      <div>
-        <h2>Product List</h2>
-        <ul>
-          {this.state.products.map((product) => (
-            <li key={product.id}>
-              {product.name} - ${product.cost}
-              <button onClick={() => this.handleAddClick(product.id)}>Add to cart</button>
-            </li>
-          ))}
-        </ul>
-        <h3>Shopping cart</h3>
-        <ul>
-          {this.state.cart.map((cartItem, index) => (
-            <li key={index}>
-              {cartItem.name} - ${cartItem.cost}
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-}
+  const toggleCompletion = (index) => {
+    const updatedTodos = [...todoList];
+    updatedTodos[index].completed = !updatedTodos[index].completed;
+    setTodoList(updatedTodos);
+  };
+
+  return (
+    <div>
+      <h2>Product List</h2>
+      <ul>
+        {products.map((product, index) => (
+          <li key={index}>
+            <div>
+              <strong>{product.name}</strong> - ${product.price}
+            </div>
+            <button onClick={() => handleAddToCart(product.name)}>Add to Cart</button>
+          </li>
+        ))}
+      </ul>
+
+      <h3>Cart</h3>
+      <ul>
+        {cart.map((item, index) => (
+          <li key={index}>
+            {item}
+            <button onClick={() => handleRemoveFromCart(index)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+
+      <Timer />
+
+      <h1>Todo List</h1>
+      <ul>
+        {todoList.map((todo, index) => (
+          <li key={index}>
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => toggleCompletion(index)}
+            />
+            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+              {todo.title}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default ProductList;
